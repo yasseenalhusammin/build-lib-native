@@ -35,7 +35,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake libtool m4
+          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake libtool m4 pkg-config
 
       - name: Install Python Dependencies
         run: |
@@ -43,7 +43,7 @@ jobs:
           source .venv/bin/activate
           pip install --upgrade pip
           pip install maturin
-          pip install git+https://github.com/kivy/python-for-android.git@develop || pip install python-for-android
+          pip install git+https://github.com/kivy/python-for-android.git@1.6.0 || pip install python-for-android
           pip install --upgrade cython pipgrip
 
       - name: Extract dependencies with pipgrip
