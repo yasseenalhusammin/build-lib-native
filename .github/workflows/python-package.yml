@@ -86,7 +86,7 @@ jobs:
           cat pipgrip.lock
       
       - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v2  # Change to v2 or latest
+        uses: actions/upload-artifact@latest  # استخدام أحدث إصدار
         with:
           name: mydist
           path: /home/runner/.local/share/python-for-android/dists/mydist.zip
