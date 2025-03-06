@@ -44,7 +44,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gettext libiconv-hook-dev autoconf automake \
-            libtool pkg-config m4 libtool-bin
+            libtool pkg-config m4 libtool-bin libltdl-dev
 
       - name: Verify Dependencies Installation
         run: |
