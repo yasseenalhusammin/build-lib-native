@@ -21,21 +21,24 @@ jobs:
           java-package: jdk
           architecture: x64
           distribution: 'temurin'
-          check-latest: false
-          server-id: github
-          server-username: ${{ github.actor }}
-          server-password: ${{ secrets.GITHUB_TOKEN }}
-          overwrite-settings: true
 
       - name: Set up Python 3
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
 
+      - name: Upload requirements.txt
+        run: |
+          if [ ! -f requirements.txt ]; then
+            echo "requirements.txt not found!"
+            exit 1
+          fi
+          cat requirements.txt
+
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake libtool m4 pkg-config
+          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake
 
       - name: Install Python Dependencies
         run: |
@@ -43,7 +46,9 @@ jobs:
           source .venv/bin/activate
           pip install --upgrade pip
           pip install maturin
-          pip install git+https://github.com/kivy/python-for-android.git@1.6.0 || pip install python-for-android
+          # استخدام GITHUB_TOKEN للمصادقة
+          git config --global url."https://${{ secrets.GITHUB_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+          pip install git+https://github.com/kivy/python-for-android.git@develop || pip install python-for-android
           pip install --upgrade cython pipgrip
 
       - name: Extract dependencies with pipgrip
