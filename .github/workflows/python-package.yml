@@ -18,6 +18,14 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '11'
+          java-package: jdk
+          architecture: x64
+          distribution: 'temurin'  # استخدم توزيع Java المناسب
+          check-latest: false
+          server-id: github
+          server-username: ${{ github.actor }}  # استخدم المتغير في GitHub
+          server-password: ${{ secrets.GITHUB_TOKEN }}  # تأكد من استخدام الأسرار بشكل صحيح
+          overwrite-settings: true
 
       - name: Set up Python 3
         uses: actions/setup-python@v2
