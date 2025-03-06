@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2  # تحديث إلى v2
         with:
           java-version: '11'
 
@@ -35,8 +35,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gettext
-          sudo apt-get install -y libiconv-hook-dev autoconf automake
+          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake
 
       - name: Install Python Dependencies
         run: |
@@ -44,7 +43,6 @@ jobs:
           source .venv/bin/activate
           pip install --upgrade pip
           pip install maturin
-          # استخدام GITHUB_TOKEN للمصادقة
           git config --global url."https://${{ secrets.GITHUB_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
           pip install git+https://github.com/kivy/python-for-android.git@develop || pip install python-for-android
           pip install --upgrade cython pipgrip
@@ -63,11 +61,10 @@ jobs:
 
           echo "ANDROID_SDK_ROOT=$HOME/Android/Sdk" >> $GITHUB_ENV
           echo "SDK_ROOT=$HOME/Android/Sdk" >> $GITHUB_ENV
-          echo "ANDROID_NDK_HOME=/home/runner/Android/Sdk/ndk/25.2.9519653" >> $GITHUB_ENV
+          echo "ANDROID_NDK_HOME=$HOME/Android/Sdk/ndk/25.2.9519653" >> $GITHUB_ENV
           echo "PATH=$PATH:$HOME/Android/Sdk/cmdline-tools/latest/bin:$HOME/Android/Sdk/platform-tools:$ANDROID_NDK_HOME" >> $GITHUB_ENV
 
           yes | $HOME/Android/Sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
-          $HOME/Android/Sdk/cmdline-tools/latest/bin/sdkmanager --list
 
       - name: Remove version
         run: |
@@ -81,7 +78,7 @@ jobs:
       - name: Build Android Package
         id: build_package
         run: |
-          source .venv/bin/activate  # Activate virtual environment
+          source .venv/bin/activate
           p4a create --requirements=$(paste -s -d, pipgrip.lock) --arch arm64-v8a --arch armeabi-v7a --arch x86_64 --sdk-dir $ANDROID_SDK_ROOT --ndk-dir $ANDROID_NDK_HOME --dist-name mydist
 
       - name: Zip mydist folder
@@ -95,7 +92,7 @@ jobs:
           cat pipgrip.lock
 
       - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2  # تحديث الإصدار
         with:
           name: mydist
           path: /home/runner/.local/share/python-for-android/dists/mydist.zip
