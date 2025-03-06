@@ -30,6 +30,7 @@ jobs:
       - name: Clean previous builds
         run: |
           rm -rf .venv
+          rm -rf /home/runner/.local/share/python-for-android/dists/*
 
       - name: Upload requirements.txt
         run: |
@@ -42,7 +43,19 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake libtool pkg-config m4
+          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake \
+            libtool pkg-config m4 libtool-bin
+
+      - name: Verify Dependencies Installation
+        run: |
+          if ! command -v autoconf &> /dev/null; then
+            echo "autoconf could not be found"
+            exit 1
+          fi
+          if ! command -v automake &> /dev/null; then
+            echo "automake could not be found"
+            exit 1
+          fi
 
       - name: Install Python Dependencies
         run: |
@@ -72,6 +85,17 @@ jobs:
           echo "PATH=$PATH:$HOME/Android/Sdk/cmdline-tools/latest/bin:$HOME/Android/Sdk/platform-tools:$ANDROID_NDK_HOME" >> $GITHUB_ENV
 
           yes | $HOME/Android/Sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+
+      - name: Check Android SDK Installation
+        run: |
+          if [ ! -d "$ANDROID_SDK_ROOT" ]; then
+            echo "Android SDK directory does not exist!"
+            exit 1
+          fi
+          if [ ! -f "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" ]; then
+            echo "SDK Manager not found!"
+            exit 1
+          fi
 
       - name: Remove version
         run: |
