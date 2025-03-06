@@ -27,6 +27,10 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Clean previous builds
+        run: |
+          rm -rf .venv
+
       - name: Upload requirements.txt
         run: |
           if [ ! -f requirements.txt ]; then
@@ -38,7 +42,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake
+          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake libtool pkg-config m4
 
       - name: Install Python Dependencies
         run: |
@@ -46,9 +50,8 @@ jobs:
           source .venv/bin/activate
           pip install --upgrade pip
           pip install maturin
-          # استخدام GITHUB_TOKEN للمصادقة
           git config --global url."https://${{ secrets.GITHUB_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-          pip install git+https://github.com/kivy/python-for-android.git@develop || pip install python-for-android
+          pip install git+https://github.com/kivy/python-for-android.git@1.6.0 || pip install python-for-android
           pip install --upgrade cython pipgrip
 
       - name: Extract dependencies with pipgrip
