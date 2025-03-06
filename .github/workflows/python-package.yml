@@ -86,7 +86,7 @@ jobs:
           cat pipgrip.lock
       
       - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v3  # استخدام الإصدار 3
+        uses: actions/upload-artifact@v2  # استخدام الإصدار 2
         with:
           name: mydist
           path: /home/runner/.local/share/python-for-android/dists/mydist.zip
