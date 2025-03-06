@@ -20,11 +20,11 @@ jobs:
           java-version: '11'
           java-package: jdk
           architecture: x64
-          distribution: 'temurin'  # استخدم توزيع Java المناسب
+          distribution: 'temurin'
           check-latest: false
           server-id: github
-          server-username: ${{ github.actor }}  # استخدم المتغير في GitHub
-          server-password: ${{ secrets.GITHUB_TOKEN }}  # تأكد من استخدام الأسرار بشكل صحيح
+          server-username: ${{ github.actor }}
+          server-password: ${{ secrets.GITHUB_TOKEN }}
           overwrite-settings: true
 
       - name: Set up Python 3
@@ -35,7 +35,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake
+          sudo apt-get install -y gettext libiconv-hook-dev autoconf automake libtool
 
       - name: Install Python Dependencies
         run: |
@@ -43,7 +43,7 @@ jobs:
           source .venv/bin/activate
           pip install --upgrade pip
           pip install maturin
-          pip install git+https://github.com/kivy/python-for-android.git@develop || pip install python-for-android
+          pip install git+https://github.com/kivy/python-for-android.git@1.6.0 || pip install python-for-android
           pip install --upgrade cython pipgrip
 
       - name: Extract dependencies with pipgrip
@@ -78,7 +78,7 @@ jobs:
         id: build_package
         run: |
           source .venv/bin/activate
-          p4a create --requirements=$(paste -s -d, pipgrip.lock) --arch arm64-v8a --arch armeabi-v7a --arch x86_64 --sdk-dir $ANDROID_SDK_ROOT --ndk-dir $ANDROID_NDK_HOME --dist-name mydist
+          p4a create --requirements=$(paste -s -d, pipgrip.lock) --arch arm64-v8a --arch armeabi-v7a --arch x86_64 --sdk-dir $ANDROID_SDK_ROOT --ndk-dir $ANDROID_NDK_HOME --dist-name mydist || { echo 'Failed to build Android package'; exit 1; }
 
       - name: Zip mydist folder
         run: |
@@ -91,7 +91,7 @@ jobs:
           cat pipgrip.lock
 
       - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v4  # استخدام الإصدار 4
+        uses: actions/upload-artifact@v4
         with:
           name: mydist
           path: /home/runner/.local/share/python-for-android/dists/mydist.zip
