@@ -73,10 +73,11 @@ jobs:
 
       - name: Create setup.py
         run: |
+          PACKAGE_NAME=$(head -n 1 requirements.txt | cut -d'=' -f 1)
           echo "from setuptools import setup, find_packages" > setup.py
           echo "" >> setup.py
           echo "setup(" >> setup.py
-          echo "    name='${{ github.event.repository.name }}'," >> setup.py
+          echo "    name='${PACKAGE_NAME}'," >> setup.py
           echo "    version='0.1'," >> setup.py
           echo "    packages=find_packages()," >> setup.py
           echo "    install_requires=[" >> setup.py
