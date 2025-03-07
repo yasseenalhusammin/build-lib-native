@@ -57,12 +57,11 @@ jobs:
             exit 1
           fi
 
-      - name: Install Python Dependencies
+      - name: Install Python Dependencies and Build Tools
         run: |
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install --upgrade pip
-          pip install maturin
+          pip install --upgrade pip setuptools wheel maturin
           git config --global url."https://${{ secrets.GITHUB_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
           pip install git+https://github.com/kivy/python-for-android.git@1.6.0 || pip install python-for-android
           pip install --upgrade cython pipgrip
@@ -71,6 +70,20 @@ jobs:
         run: |
           source .venv/bin/activate
           pipgrip $(cat requirements.txt) --lock
+
+      - name: Create setup.py
+        run: |
+          echo "from setuptools import setup, find_packages" > setup.py
+          echo "" >> setup.py
+          echo "setup(" >> setup.py
+          echo "    name='${{ github.event.repository.name }}'," >> setup.py
+          echo "    version='0.1'," >> setup.py
+          echo "    packages=find_packages()," >> setup.py
+          echo "    install_requires=[" >> setup.py
+          echo "        # Add your dependencies here" >> setup.py
+          echo "    ]," >> setup.py
+          echo "    python_requires='>=3.6'," >> setup.py
+          echo ")" >> setup.py
 
       - name: Set up Android SDK
         run: |
